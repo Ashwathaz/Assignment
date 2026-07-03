@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { sleep, check } from 'k6';
 
 // Adjust TARGET to your Elastic IP or domain before running
-const TARGET = __ENV.TARGET_URL || 'http://YOUR_ELASTIC_IP:8081/';
+const TARGET = __ENV.TARGET_URL || 'http://13.201.11.78:8081/';
 
 export const options = {
   scenarios: {

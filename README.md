@@ -1,120 +1,146 @@
-# CI/CD Pipeline for a Static Web App on AWS (Jenkins + Docker + Nginx)
+# Hybrid Cloud DevOps Infrastructure on AWS
+> **Production-Ready CI/CD Frontend Deployment & Serverless Backend Architecture**
 
-## 30-Second Project Pitch
+[![AWS](https://img.shields.io/badge/AWS-Free%20Tier-orange?logo=amazon-aws&style=flat-square)](https://aws.amazon.com/)
+[![Docker](https://img.shields.io/badge/Docker-Alpine%20Nginx-blue?logo=docker&style=flat-square)](https://www.docker.com/)
+[![Jenkins](https://img.shields.io/badge/Jenkins-Declarative%20Pipeline-red?logo=jenkins&style=flat-square)](https://www.jenkins.io/)
+[![k6](https://img.shields.io/badge/k6-Load%20Testing-blueviolet?logo=k6&style=flat-square)](https://k6.io/)
+[![DuckDNS](https://img.shields.io/badge/DNS-DuckDNS-yellow?logo=dns&style=flat-square)](https://www.duckdns.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-A static web application deployed on a single AWS EC2 (Ubuntu) instance, containerized with Docker and served by Nginx. Jenkins runs natively on the same instance and automates the full build-to-deploy flow: it builds a Docker image from the app source, deploys the container, runs a health check, and backs up build artifacts to S3. The instance is secured with least-privilege IAM roles and restrictive Security Groups, monitored with Amazon CloudWatch, and load tested with k6.
+This repository demonstrates a production-grade, hybrid DevOps infrastructure deployed on AWS Free Tier. It showcases best practices in automated CI/CD pipelines, containerization, serverless backend workflows, secure networking, and real-time observability.
+
+---
+
+## 📌 Project Overview
+
+This architecture is designed around two core paths:
+1. **Containerized CI/CD Path**: A static frontend web application is containerized using Docker and deployed on an AWS EC2 instance. Jenkins orchestrates the checkout, build, testing, deployment, and backup processes natively.
+2. **Serverless Backend Path**: End users query the system via custom DuckDNS domain names (`assignment1ash.duckdns.org`). The requests are secured via HTTPS, routed through AWS API Gateway, executed via AWS Lambda, backed by Amazon S3 storage, and monitored in real-time via CloudWatch.
+
+---
+
+## 📐 System Architecture
+
+Below is the visual schematic of the deployed infrastructure:
+
+![System Architecture](docs/Archietecture.png)
+
+### Architectural Flow Highlights
+*   **The Deployment Path (Dotted Purple Line)**: Developer pushes to GitHub $\rightarrow$ Webhook triggers Jenkins on EC2 $\rightarrow$ Jenkins reads [metadata.json](file:///a:/Assignment/config/metadata.json) $\rightarrow$ Builds Docker image $\rightarrow$ Performs resource-capped deployment $\rightarrow$ Runs local health check $\rightarrow$ Syncs build artifacts and configuration to Amazon S3.
+*   **The Application Path (Solid Black Line)**: User visits `https://assignment1ash.duckdns.org` $\rightarrow$ DuckDNS resolves to AWS API Gateway $\rightarrow$ API Gateway routes to AWS Lambda $\rightarrow$ Lambda queries Amazon S3 (and optional DynamoDB) $\rightarrow$ Execution metrics are pushed to Amazon CloudWatch.
+*   **The Load Testing Path (Blue Box)**: k6 acts as an external load generator, sending HTTPS requests to the application to test latency, throughput, and system limits, reporting results back directly.
+
+For a detailed analysis of every block, please refer to [ARCHITECTURE.md](file:///a:/Assignment/ARCHITECTURE.md).
+
+---
+
+## 🚀 Key Features
+
+*   **Metadata-Driven Pipelines**: Avoids hardcoded ports or environment details by dynamically reading configurations from [metadata.json](file:///a:/Assignment/config/metadata.json).
+*   **Resource Hardening**: Protects the t2.micro EC2 instance from resource starvation by capping Docker build memory (`--memory=512m`) and container runtime memory (`--memory=256m`).
+*   **Continuous Observability**: System performance, HTTP traffic, Docker logs, and Nginx connections are tracked in real-time via an Amazon CloudWatch Dashboard.
+*   **Automated Backups**: Successful builds are automatically archived in a secure, encrypted S3 bucket.
+*   **TLS/HTTPS Termination**: Integrated security via DuckDNS dynamic routing and cert termination.
+*   **Load Testing Validation**: Built-in verification with k6 to enforce latency SLA thresholds (p95 < 2.0s).
+
+---
+
+## 🛠️ AWS Services & Technologies Used
+
+*   **AWS EC2**: Hosts the Jenkins server and running Docker containers.
+*   **AWS Lambda (Python)**: Executes backend logic on-demand without server overhead.
+*   **Amazon API Gateway**: Acts as the entry-point router, managing TLS handshakes.
+*   **Amazon S3**: Hosts static backups, configurations, and Lambda datasets.
+*   **Amazon CloudWatch**: Gathers system metrics (agent-based) and logs for alerting.
+*   **IAM & Security Groups**: Limits access scope using least-privilege policies.
+*   **DuckDNS**: Dynamic DNS provider representing domain mappings.
+*   **k6**: Modern load testing tool used for performance verification.
+
+---
+
+## 📂 Repository Structure
 
 ```text
-Git push -> Jenkins pipeline triggers -> Docker image built -> container deployed -> health check -> S3 backup -> CloudWatch monitors -> k6 load tests
+├── .gitignore                   # Excludes temporary run logs, workspaces, and vendor caches
+├── README.md                    # This portal
+├── DEPLOYMENT_GUIDE.md          # Complete deployment walk-through
+├── SECURITY_SUMMARY.md          # Security hardening analysis
+├── PERFORMANCE_REPORT.md        # k6 load testing execution metrics
+├── MONITORING.md                # CloudWatch metrics, dashboards, and alarms
+├── ARCHITECTURE.md              # In-depth architectural review
+├── REPORT.md                    # Comprehensive academic/technical report
+├── PROJECT_STRUCTURE.md         # Detailed index of all files/directories
+├── DEMO_SCRIPT.md               # 5-10 minute presentation walk-through script
+├── app/                         # Frontend application source code
+├── config/                      # Dynamic pipeline parameters
+├── docker/                      # Docker container building files
+├── jenkins/                     # Jenkinsfile pipeline definition
+└── k6/                          # Load testing scripts and results
 ```
 
-## Architecture
+For file-by-file explanations, see [PROJECT_STRUCTURE.md](file:///a:/Assignment/PROJECT_STRUCTURE.md).
 
-See [`docs/architecture.svg`](docs/architecture.svg) for the full diagram. Summary:
+---
 
-```text
-Developer
-    |
-    v
-GitHub repo  --(webhook)-->  Jenkins (Docker container/service on EC2)
-                                   |
-                                   v
-                        Docker build -> Nginx container (app)
-                                   |
-                    -------------------------------
-                    |              |               |
-                    v              v               v
-             Port 8081/80    S3 (backups)   CloudWatch Agent
-             (Elastic IP)                    (metrics + logs)
-                    |                               |
-                    v                               v
-              End users                     CloudWatch Dashboard
-                                             + Alarms (SNS email)
+## 🔧 Installation & Deployment
 
-Optional: API Gateway -> Lambda (health/status endpoint)
-```
+Deploying the system takes 5 main steps:
+1. **Setup AWS Infrastructure**: Provision an EC2 instance (`t2.micro`, Ubuntu) and attach the `EC2-App-Role` IAM Role. Set up an S3 bucket with default encryption.
+2. **Configure Security Groups**: Restrict ports `22` (SSH), `8080` (Jenkins UI), and `443` (HTTPS) to your admin IP. Keep `80` (HTTP) open for certificate routing.
+3. **Provision the EC2 Instance**: Install Docker, AWS CLI, and configure Jenkins to run as a Docker container mounting the host's `/var/run/docker.sock`.
+4. **Link Jenkins & GitHub**: Set up a pipeline linking to your repository. Establish GitHub webhooks to trigger builds on commit.
+5. **Set up API Gateway, Lambda, and DNS**: Set up the Lambda backend, expose it via API Gateway, and route traffic through DuckDNS.
 
-IAM role `EC2-App-Role` is attached to the instance (no static AWS keys anywhere) and scoped to only: S3 access on the one backup bucket, and the CloudWatch agent policy.
+For commands, configurations, and scripts, read the [DEPLOYMENT_GUIDE.md](file:///a:/Assignment/DEPLOYMENT_GUIDE.md).
 
-## Folder Structure
+---
 
-```text
-aws-cicd-static-site/
-|-- app/
-|   |-- index.html
-|   |-- style.css
-|-- config/
-|   |-- metadata.json
-|-- docker/
-|   |-- Dockerfile
-|-- jenkins/
-|   |-- Jenkinsfile
-|-- docs/
-|   |-- architecture.svg
-|   |-- deployment-guide.md
-|   |-- security-summary.md
-|   |-- load-testing-report.md
-|-- k6/
-|   |-- loadtest.js
-|-- .gitignore
-|-- README.md
-```
+## 📈 Performance Testing Results
 
-## Important Files
+A performance run was executed using **k6** against the dynamic HTTPS endpoint. Under a ramped load profile scaling to 50 concurrent users:
 
-### `app/index.html`, `app/style.css`
-Static frontend served by Nginx.
+*   **Total Requests**: 5,249
+*   **Success Rate**: 100% (0 errors)
+*   **Average Response Time**: 32.69 ms
+*   **P95 Latency**: 38.63 ms
+*   **Maximum Latency**: 163.6 ms
 
-### `config/metadata.json`
-```json
-{
-  "app_name": "AI CI/CD App",
-  "port": 8081
-}
-```
-Jenkins reads `port` at deploy time so the port is never hardcoded in the pipeline.
+The system easily met the threshold of `p95 < 2000ms`. Detailed reports, graph discussions, and bottleneck reviews can be found in [PERFORMANCE_REPORT.md](file:///a:/Assignment/PERFORMANCE_REPORT.md).
 
-### `docker/Dockerfile`
-Builds an `nginx:alpine` image containing the static site. Lightweight, fast to build, minimal attack surface.
+---
 
-### `jenkins/Jenkinsfile`
-Declarative pipeline with stages: Checkout -> Read Metadata -> Build Image -> Deploy Container -> Health Check -> Backup to S3.
+## 🛡️ Security Posture
 
-Note: an earlier version of this project included a Python "validator" stage that fails the pipeline early if required files are missing (a fail-fast gate). It was removed here to keep the pipeline focused on the AWS deployment flow, but it's a legitimate best practice worth mentioning if asked about it in review — file-existence and content checks before build are a cheap way to prevent broken deploys.
+The repository adheres to stringent security paradigms:
+*   **Identity**: No static AWS access keys. The EC2 instance accesses S3 and CloudWatch via temporary credentials provided by an IAM role.
+*   **Network Boundaries**: Port restriction shields Jenkins and SSH ports from public scanning.
+*   **Data Protection**: Buckets are encrypted via AES-256 and configured with strict public access blocks.
+*   **Container Security**: Nginx container runs as a read-only root system where possible, with logging size limits set to prevent disk filling.
 
-## How the Pipeline Works
+Read [SECURITY_SUMMARY.md](file:///a:/Assignment/SECURITY_SUMMARY.md) for more details.
 
-1. **Checkout** — Jenkins pulls the latest commit via a GitHub webhook trigger.
-2. **Read Metadata** — reads `config/metadata.json`, extracts the deployment port.
-3. **Build Docker Image** — tags the image `app:<BUILD_NUMBER>` so every build is traceable.
-4. **Deploy Container** — stops/removes the old container, runs the new one, with log rotation (`max-size=10m`) so container logs don't fill the disk.
-5. **Health Check** — curls the app's own port after deploy; fails the build if the app doesn't respond, instead of silently deploying a broken container.
-6. **Backup to S3** — syncs the app folder and metadata to S3 for versioned backup/audit.
+---
 
-## Infrastructure (AWS)
+## 🔭 Future Improvements
 
-- **EC2**: Ubuntu 22.04/24.04 LTS, `t2.micro` (Free Tier), Elastic IP attached.
-- **IAM**: instance role `EC2-App-Role` — S3 access limited to one bucket ARN, plus `CloudWatchAgentServerPolicy`. No access keys stored on the box or in Jenkins.
-- **Security Group**: SSH (22) restricted to admin IP only; Jenkins UI (8080) restricted to admin IP only; HTTP (80)/HTTPS (443) open to the world for the app.
-- **S3**: private bucket, default encryption (AES256), public access fully blocked. Used for app/config backups.
-- **CloudWatch**: agent installed on the instance collecting CPU, memory, disk, and Nginx/Docker logs; dashboard + a CPU-utilization alarm notifying via SNS email.
-- **API Gateway + Lambda** (optional add-on): a small Lambda-backed `/health` or `/status` endpoint, satisfying the "API Gateway where applicable" requirement without adding real complexity to a static site.
-- **HTTPS**: Let's Encrypt via Certbot if a domain is available; otherwise a documented self-signed cert with ACM+ALB noted as the production-grade alternative.
+1.  **Orchestration Upgrade**: Migrate the containerized frontend to Amazon ECS (Fargate) or Amazon EKS (Kubernetes) to remove EC2 single points of failure.
+2.  **Infrastructure as Code (IaC)**: Automate the resource configuration using HashiCorp Terraform or AWS CloudFormation.
+3.  **Secrets Management**: Integrate AWS Secrets Manager to dynamically inject API credentials at runtime.
+4.  **Content Delivery**: Serve the static app directly from CloudFront caching edges, utilizing EC2/ECS only for dynamic API operations.
 
-Full setup commands are in [`docs/deployment-guide.md`](docs/deployment-guide.md).
+---
 
-## Load Testing
+## 📸 Screenshots
 
-`k6/loadtest.js` runs against the live endpoint; results and analysis (latency, throughput, error rate, correlated with CloudWatch CPU/memory) are in [`docs/load-testing-report.md`](docs/load-testing-report.md).
+*Ensure to populate this section with your actual deployment screenshots before submission:*
+1. **Jenkins Successful Pipeline Run**: Shows stages `Checkout`, `Read Metadata`, `Build Image`, `Deploy Container`, `Health Check`, and `Backup to S3` in green.
+2. **CloudWatch Dashboard**: Displays widgets showing EC2 CPU utilization, network traffic, Nginx logs, and memory allocation.
+3. **API Gateway Execution Log**: Displays the dynamic API response and latency logs.
+4. **k6 Command Line Output**: Displays the final statistics summary matching the 5,249 request count.
 
-## Security Summary
+---
 
-See [`docs/security-summary.md`](docs/security-summary.md) for IAM policy details, Security Group rules, and hardening notes.
+## 📄 License
 
-## Possible Improvements (documented, not implemented)
-
-- Move Jenkins off the app host onto its own instance or a managed CI service, so app and CI don't share failure domains.
-- Auto Scaling Group + Application Load Balancer for actual horizontal scaling and zero-downtime deploys.
-- ACM-issued certificate on an ALB instead of a host-level self-signed/Certbot cert.
-- Migrate secrets (if any are added later) to AWS Secrets Manager instead of Jenkins credentials store.
-- CloudFront + S3 static hosting as a lower-cost, higher-scale alternative to serving static content from EC2 directly.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

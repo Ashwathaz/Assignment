@@ -1,3 +1,117 @@
+# ==============================================================================
+# DevOps Gitignore Template - Production Ready
+# Covers: Docker, Jenkins, Python, Node.js, VS Code, Linux, and Test Artifacts
+# ==============================================================================
+
+# --- System & OS Files ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.directory
+Desktop.ini
+
+# --- Python ---
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.toast
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+build/
+develop-eggs/
+dist/
+downloads/
+include/
+share/
+
+# --- Node.js ---
+node_modules/
+jspm_packages/
+web_modules/
+.npm/
+.eslintcache
+.stylelintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.docusaurus/
+.next/
+.nuxt/
+out/
+.vuepress/dist
+
+# --- Docker ---
+# Exclude build-time context or local credentials
+.docker/
+docker-compose.override.yml
+*.tar
+*.tar.gz
+*.dockerlogs
+container-logs/
+docker-creds.json
+
+# --- Jenkins & CI/CD ---
+# Avoid committing local Jenkins runtimes or configurations
+.jenkins/
+war/
+work/
+plugins/
+secret.key*
+secrets/
+secrets.sandbox/
+*.log
+*.tmp
+*.bak
+jobs/
+workspace/
+fingerprints/
+caches/
+
+# --- VS Code & IDEs ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- k6 & Performance Testing ---
+# Exclude large execution result files to prevent repo bloat
+# (Note: Keep results.json if specifically required for archival)
+k6/results-raw.json
+k6/performance-run-*.json
+k6/*.log
+k6/html-report.html
+
+# --- Project Specifics ---
 out.txt
+*.backup
+temp/
+tmp/

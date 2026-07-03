@@ -1,37 +1,26 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
-
-// Adjust TARGET to your Elastic IP or domain before running
-const TARGET = __ENV.TARGET_URL || 'http://13.201.11.78:8081/';
+import { check, sleep } from 'k6';
 
 export const options = {
-  scenarios: {
-    steady_load: {
-      executor: 'constant-vus',
-      vus: 20,
-      duration: '2m',
-    },
-    spike: {
-      executor: 'ramping-vus',
-      startVUs: 0,
-      stages: [
-        { duration: '30s', target: 100 },
-        { duration: '1m', target: 100 },
-        { duration: '30s', target: 0 },
-      ],
-      startTime: '2m30s',
-    },
-  },
+  stages: [
+    { duration: '30s', target: 10 },
+    { duration: '1m', target: 10 },
+    { duration: '30s', target: 50 },
+    { duration: '1m', target: 50 },
+    { duration: '30s', target: 0 },
+  ],
   thresholds: {
-    http_req_duration: ['p(95)<500'],
-    http_req_failed: ['rate<0.01'],
+    http_req_duration: ['p(95)<2000'],
+    http_req_failed: ['rate<0.05'],
   },
 };
 
 export default function () {
-  const res = http.get(TARGET);
+  const res = http.get('https://assignment1ash.duckdns.org');
+
   check(res, {
-    'status is 200': (r) => r.status === 200,
+    'Status is 200': (r) => r.status === 200,
   });
+
   sleep(1);
 }

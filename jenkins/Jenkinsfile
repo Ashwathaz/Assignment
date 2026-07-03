@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME     = 'ai-app'
+        APP_NAME     = 'ec2-front'
         DOCKER_IMAGE = "app:${BUILD_NUMBER}"
-        S3_BUCKET    = 'yourname-devops-assignment-2026'   // change to your bucket
+        S3_BUCKET    = 'backupandstorage-ash'   // change to your bucket
         AWS_REGION   = 'ap-south-1'                        // change to your region
     }
 

@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME     = 'ai-app'
+        DOCKER_IMAGE = "app:${BUILD_NUMBER}"
+        S3_BUCKET    = 'yourname-devops-assignment-2026'   // change to your bucket
+        AWS_REGION   = 'ap-south-1'                        // change to your region
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Read Metadata') {
+            steps {
+                script {
+                    def metadata = readJSON file: 'config/metadata.json'
+                    env.METADATA_PORT = metadata.port.toString()
+                    env.APP_LABEL     = metadata.app_name
+                    echo "Deploying '${env.APP_LABEL}' on port ${env.METADATA_PORT}"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                // --memory caps the build so it can't starve Jenkins itself on a single small VM
+                sh 'docker build --memory=512m -t $DOCKER_IMAGE -f docker/Dockerfile .'
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                    docker rm -f $APP_NAME || echo "No old container found"
+                    docker run -d --restart unless-stopped \
+                        -p $METADATA_PORT:80 \
+                        --name $APP_NAME \
+                        --memory=256m \
+                        --log-driver json-file \
+                        --log-opt max-size=10m \
+                        $DOCKER_IMAGE
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                    sleep 5
+                    curl -sf http://localhost:$METADATA_PORT/ > /dev/null && \
+                        echo "[HEALTHCHECK] App is responding on port $METADATA_PORT" || \
+                        (echo "[HEALTHCHECK] App failed to respond" && exit 1)
+                '''
+            }
+        }
+
+        stage('Backup Artifacts to S3') {
+            steps {
+                sh '''
+                    aws s3 sync app/ s3://$S3_BUCKET/site-backup/ --region $AWS_REGION --exclude ".git/*"
+                    aws s3 cp config/metadata.json s3://$S3_BUCKET/config-backup/metadata-$BUILD_NUMBER.json --region $AWS_REGION
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build #${BUILD_NUMBER} deployed successfully. Image: ${DOCKER_IMAGE}"
+        }
+        failure {
+            echo "Build #${BUILD_NUMBER} failed. Check console output above for the failing stage."
+        }
+    }
+}

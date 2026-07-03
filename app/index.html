@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- MUST maintain this title for L2 verification in Jenkins -->
+    <title>AI CI/CD App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-icon">AZ</span>
+                    <span class="logo-text">ashz//zeus</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#">Overview ⏷</a></li>
+                    <li><a href="#">Validation</a></li>
+                    <li><a href="#">Docker</a></li>
+                    <li><a href="#">Jenkins</a></li>
+                    <li><a href="#">Testing</a></li>
+                    <li><a href="#">Logs</a></li>
+                    <li><a href="#">More ⏷</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <a href="#" class="live-btn" style="color:var(--accent-red)">▶ SECURE</a>
+                <button class="search-btn">🔍</button>
+                <button class="signup-btn">Trigger Build</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breaking News Banner -->
+    <div class="breaking-banner">
+        <div class="banner-content">
+            <span class="breaking-label">UPDATE</span> <span class="divider">|</span>
+            <span class="breaking-text">Jenkins build successfully completed across all mandatory validation stages</span>
+        </div>
+        <button class="close-btn">✕</button>
+    </div>
+
+    <!-- Trending Bar -->
+    <div class="trending-bar">
+        <div class="trending-container">
+            <span class="trending-label">📈 Stages</span>
+            <ul class="trending-links">
+                <li><a href="#">L1: File Check</a></li>
+                <li><a href="#">L2: Content Check</a></li>
+                <li><a href="#">L3: Runtime Check</a></li>
+                <li><a href="#">Docker Deploy</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="main-container">
+        <!-- Left Column -->
+        <section class="col-left">
+            <article class="featured-article">
+                <div class="featured-image">
+                    <img src="https://placehold.co/800x500/212121/white?text=Metadata-Driven+Pipeline" alt="Pipeline Dashboard">
+                    <div class="live-badge">ACTIVE</div>
+                </div>
+                <div class="featured-content">
+                    <span class="category">SUCCESS</span>
+                    <h2>Metadata-Driven Deployment Pipeline Passes All Stages</h2>
+                </div>
+            </article>
+
+            <div class="live-updates">
+                <div class="live-updates-header">
+                    <span class="recording-icon"></span> PIPELINE LOGS
+                </div>
+                <ul class="updates-list">
+                    <li>
+                        <span class="time">2m ago:</span>
+                        <a href="#">Metadata validation completed. Checked for index.html and style.css in workspace.</a>
+                    </li>
+                    <li>
+                        <span class="time">7m ago:</span>
+                        <a href="#">Content check passed. HTML file correctly contains expected_title defined in config.</a>
+                    </li>
+                    <li>
+                        <span class="time">17m ago:</span>
+                        <a href="#">Docker build finished. Temporary image instantiated for localized sandbox verification.</a>
+                    </li>
+                    <li>
+                        <span class="time">18m ago:</span>
+                        <a href="#">Runtime network validated. Local Nginx wrapper returned 200 OK HTTP status code.</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Middle Column -->
+        <section class="col-middle">
+            <article class="middle-featured">
+                <img src="https://placehold.co/600x400/f7941d/white?text=Docker+Containerization" alt="Docker Containerization" class="middle-img">
+                <h2><a href="#">Docker Containerization Automates Final Service Deployment Environment</a></h2>
+            </article>
+
+            <div class="news-list">
+                <article class="news-item">
+                    <div class="news-text">
+                        <h3><a href="#">Python Validator intercepts pipeline to enforce strict metadata caching mapping</a></h3>
+                    </div>
+                    <img src="https://placehold.co/200x150/c8102e/white?text=Validator" alt="Validator" class="news-thumb">
+                </article>
+                <article class="news-item">
+                    <div class="news-text">
+                        <h3><a href="#">Jenkins declarative pipeline manages the UNIX runtime execution states securely</a></h3>
+                    </div>
+                    <img src="https://placehold.co/200x150/008CBA/white?text=Jenkins" alt="Jenkins" class="news-thumb">
+                </article>
+                <article class="news-item text-only">
+                    <h3><a href="#">If structural metadata is missing, pipeline rejects immediately to prevent faulty builds</a></h3>
+                </article>
+                <article class="news-item text-only">
+                    <h3><a href="#">Dynamic URL resolution maps open ports directly to Jenkins build output logs using ifconfig</a></h3>
+                </article>
+                <article class="news-item text-only">
+                    <h3><a href="#">Idempotent container cleanup strategy ensures zero overlapped Docker naming conflicts</a></h3>
+                </article>
+                <article class="news-item text-only">
+                    <h3><a href="#">Developer branches are instantly checked against constraints before formal integration</a></h3>
+                </article>
+            </div>
+            
+            <article class="bottom-news">
+                <div class="news-text">
+                    <h2><a href="#">How Jenkins Orchestrates the Final Local Network Deploy to External Port 8081</a></h2>
+                </div>
+                <img src="https://placehold.co/300x200/4CAF50/white?text=Deployed" alt="Deployed" class="bottom-thumb">
+            </article>
+
+        </section>
+
+        <!-- Right Column -->
+        <section class="col-right">
+            <div class="sidebar-section">
+                <h3 class="section-title">PROJECT GUIDES</h3>
+                <ul class="sidebar-list">
+                    <li>
+                        <div class="sidebar-text">
+                            <h4><a href="#">Understanding the Gating Mechanism using metadata.json constraints</a></h4>
+                        </div>
+                        <img src="https://placehold.co/150x100/333/fff?text=Constraint" alt="Constraint" class="sidebar-thumb">
+                    </li>
+                    <li>
+                        <div class="sidebar-text">
+                            <h4><a href="#">How Jenkins builds and deploys the Docker container</a></h4>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sidebar-text">
+                            <h4><a href="#">How the Python validator checks required files before build</a></h4>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">SYSTEM ARCHITECTURE</h3>
+                <ul class="sidebar-list">
+                    <li>
+                        <div class="sidebar-text">
+                            <h4><a href="#">Jenkinsfile: Utilizing the readJSON step for native file variable parsing</a></h4>
+                        </div>
+                        <img src="https://placehold.co/150x100/008CBA/fff?text=Parsing" alt="Parsing" class="sidebar-thumb">
+                    </li>
+                    <li>
+                        <div class="sidebar-text">
+                            <h4><a href="#">Best practices for structuring L1 file existence verifications sequentially</a></h4>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sidebar-text">
+                            <h4><a href="#">Securing active deployments with clean teardown commands mapped in shell</a></h4>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">TEAM INSIGHTS</h3>
+                <ul class="sidebar-list">
+                    <li class="opinion-item">
+                        <img src="https://placehold.co/100x100/555/fff?text=Lead" alt="Author" class="author-thumb">
+                        <div class="sidebar-text">
+                            <h4><a href="#">Why gated deployments lead to fewer critical production environment crashes</a></h4>
+                            <span class="author-name">DevOps Lead</span>
+                        </div>
+                    </li>
+                    <li class="opinion-item">
+                        <img src="https://placehold.co/100x100/777/fff?text=QA" alt="Author" class="author-thumb">
+                        <div class="sidebar-text">
+                            <h4><a href="#">Simple validation gates stop incomplete files before deployment</a></h4>
+                            <span class="author-name">QA Engineer</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
